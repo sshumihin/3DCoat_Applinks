@@ -1,0 +1,46 @@
+// C4D-DialogResource
+
+DIALOGSTRINGS DLG_APPLINK_PREFERENCES
+{
+  IDS_APPLINK_PREFERENCES_TITLE  "AppLink Preferences";
+  IDS_BTN_EXPORT                 "Export To 3DCoat";
+  IDS_BTN_IMPORT                 "Import From 3DCoat";
+  IDS_CHK_COAT_START             "Start 3D-Coat";
+  IDS_CHK_EXP_MAT                "Material";
+  IDS_CHK_EXP_UV                 "Current UV Set";
+  IDS_CHK_IMP_MAT                "Material";
+  IDS_CHK_IMP_UV                 "UV Set";
+  IDS_CHK_PROMPT                 "Prompt";
+  IDS_CHK_REPLACE                "Replace Objects";
+  IDS_EXCH_FOLDER                "Exchange folder*";
+  IDS_STATIC1                    "Location";
+  IDS_STATIC11                   "Group";
+  IDS_STATIC12                   "* Select folder ..\My Documents\3D-CoatV3\Exchange";
+  IDS_STATIC13                   "General";
+  IDS_STATIC14                   "3DCoat Location";
+  IDS_STATIC15                   "";
+  IDS_STATIC17                   "3D-Coat.exe";
+  IDS_STATIC18                   "";
+  IDS_STATIC19                   "";
+  IDS_STATIC2                    "Export";
+  IDS_STATIC20                   "Painting type";
+  IDS_STATIC21                   "";
+  IDS_STATIC22                   "Map type";
+  IDS_STATIC23                   "";
+  IDS_STATIC3                    "Import";
+  IDS_STATIC8                    "";
+  IDS_TMP_FOLDER                 "Temp folder";
+  STR_IMP_BUMP                   "Bump map";
+  STR_IMP_NRM                    "Displacement map";
+  STR_MAP_ID0                    "Per-pixel painting";
+  STR_MAP_ID1                    "Microvertex painting";
+  STR_MAP_ID10                   "Drop mesh for Auto-retopology";
+  STR_MAP_ID2                    "Ptex";
+  STR_MAP_ID3                    "Perform UV-mapping";
+  STR_MAP_ID4                    "Drop reference mesh";
+  STR_MAP_ID5                    "Drop retopo mesh as new layer";
+  STR_MAP_ID6                    "Drop mesh as voxel object";
+  STR_MAP_ID7                    "Drop mesh as new pen alpha";
+  STR_MAP_ID8                    "Drop mesh as new merging primitive for voxels";
+  STR_MAP_ID9                    "Drop mesh as a curve profile";
+}

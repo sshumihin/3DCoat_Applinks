@@ -1,0 +1,9 @@
+// C4D-StringResource
+// Identifier	Text
+
+STRINGTABLE
+{
+  IDS_APPLINK_PREFERENCES "Applink 3D-Coat";
+  IDS_APPLINK_PREFERENCES_DESCR "Opens a dialog where you can set global Applink options";
+ 
+}

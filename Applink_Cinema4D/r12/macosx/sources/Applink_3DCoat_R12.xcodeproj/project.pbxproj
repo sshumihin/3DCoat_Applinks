@@ -1,0 +1,326 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		844A244314AD3E03000B4FA3 /* ApplinkDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 844A243A14AD3E03000B4FA3 /* ApplinkDialog.cpp */; };
+		844A244414AD3E03000B4FA3 /* ApplinkDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 844A243B14AD3E03000B4FA3 /* ApplinkDialog.h */; };
+		844A244514AD3E03000B4FA3 /* ApplinkExporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 844A243C14AD3E03000B4FA3 /* ApplinkExporter.cpp */; };
+		844A244614AD3E03000B4FA3 /* ApplinkExporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 844A243D14AD3E03000B4FA3 /* ApplinkExporter.h */; };
+		844A244714AD3E03000B4FA3 /* ApplinkImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 844A243E14AD3E03000B4FA3 /* ApplinkImporter.cpp */; };
+		844A244814AD3E03000B4FA3 /* ApplinkImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 844A243F14AD3E03000B4FA3 /* ApplinkImporter.h */; };
+		844A244914AD3E03000B4FA3 /* ApplinkInit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 844A244014AD3E03000B4FA3 /* ApplinkInit.cpp */; };
+		844A244A14AD3E03000B4FA3 /* ApplinkPreferences.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 844A244114AD3E03000B4FA3 /* ApplinkPreferences.cpp */; };
+		844A244B14AD3E03000B4FA3 /* ApplinkPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 844A244214AD3E03000B4FA3 /* ApplinkPreferences.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		65805F2D0851B32A0065CE1B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		26EDA6230FA303CF00050D59 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 26B036990E672B8000A14379;
+			remoteInfo = _api_stdmem;
+		};
+		657FF108085913EC00750201 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 65B7742C083D084C00F90C2D;
+			remoteInfo = _api;
+		};
+		657FF1C80859150C00750201 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 65B7742B083D084C00F90C2D;
+			remoteInfo = _api;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		653A926E0858FEB50017BCBC /* _api.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = _api.xcodeproj; path = ../../resource/_api_lib/_api.xcodeproj; sourceTree = SOURCE_ROOT; };
+		6553A1DA0926F00F0034739A /* _api_debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; name = _api_debug.xcconfig; path = ../../resource/_api_lib/_api_debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		6553A1DB0926F00F0034739A /* _api_release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; name = _api_release.xcconfig; path = ../../resource/_api_lib/_api_release.xcconfig; sourceTree = SOURCE_ROOT; };
+		844A243A14AD3E03000B4FA3 /* ApplinkDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ApplinkDialog.cpp; sourceTree = "<group>"; };
+		844A243B14AD3E03000B4FA3 /* ApplinkDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplinkDialog.h; sourceTree = "<group>"; };
+		844A243C14AD3E03000B4FA3 /* ApplinkExporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ApplinkExporter.cpp; sourceTree = "<group>"; };
+		844A243D14AD3E03000B4FA3 /* ApplinkExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplinkExporter.h; sourceTree = "<group>"; };
+		844A243E14AD3E03000B4FA3 /* ApplinkImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ApplinkImporter.cpp; sourceTree = "<group>"; };
+		844A243F14AD3E03000B4FA3 /* ApplinkImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplinkImporter.h; sourceTree = "<group>"; };
+		844A244014AD3E03000B4FA3 /* ApplinkInit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ApplinkInit.cpp; sourceTree = "<group>"; };
+		844A244114AD3E03000B4FA3 /* ApplinkPreferences.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ApplinkPreferences.cpp; sourceTree = "<group>"; };
+		844A244214AD3E03000B4FA3 /* ApplinkPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplinkPreferences.h; sourceTree = "<group>"; };
+		844A245414AD3FCF000B4FA3 /* Applink_3DCoat.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = Applink_3DCoat.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		65E51690083D10D0005BFD9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		65636BD708E5922100FBAB34 /* source */ = {
+			isa = PBXGroup;
+			children = (
+				844A243A14AD3E03000B4FA3 /* ApplinkDialog.cpp */,
+				844A243B14AD3E03000B4FA3 /* ApplinkDialog.h */,
+				844A243C14AD3E03000B4FA3 /* ApplinkExporter.cpp */,
+				844A243D14AD3E03000B4FA3 /* ApplinkExporter.h */,
+				844A243E14AD3E03000B4FA3 /* ApplinkImporter.cpp */,
+				844A243F14AD3E03000B4FA3 /* ApplinkImporter.h */,
+				844A244014AD3E03000B4FA3 /* ApplinkInit.cpp */,
+				844A244114AD3E03000B4FA3 /* ApplinkPreferences.cpp */,
+				844A244214AD3E03000B4FA3 /* ApplinkPreferences.h */,
+			);
+			path = source;
+			sourceTree = "<group>";
+		};
+		657FF105085913EC00750201 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				657FF109085913EC00750201 /* lib_api_debug.a */,
+				26EDA6240FA303CF00050D59 /* lib_api_stdmem_debug.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		65E51686083D10D0005BFD9A = {
+			isa = PBXGroup;
+			children = (
+				65636BD708E5922100FBAB34 /* source */,
+				65E516A4083D10D1005BFD9A /* _libs */,
+				65E51694083D10D0005BFD9A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		65E51694083D10D0005BFD9A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				844A245414AD3FCF000B4FA3 /* Applink_3DCoat.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		65E516A4083D10D1005BFD9A /* _libs */ = {
+			isa = PBXGroup;
+			children = (
+				6553A1DA0926F00F0034739A /* _api_debug.xcconfig */,
+				6553A1DB0926F00F0034739A /* _api_release.xcconfig */,
+				653A926E0858FEB50017BCBC /* _api.xcodeproj */,
+			);
+			name = _libs;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		65E5168D083D10D0005BFD9A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				844A244414AD3E03000B4FA3 /* ApplinkDialog.h in Headers */,
+				844A244614AD3E03000B4FA3 /* ApplinkExporter.h in Headers */,
+				844A244814AD3E03000B4FA3 /* ApplinkImporter.h in Headers */,
+				844A244B14AD3E03000B4FA3 /* ApplinkPreferences.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		65E51692083D10D0005BFD9A /* Applink_3DCoat_R12 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65450B66085517D80099394F /* Build configuration list for PBXNativeTarget "Applink_3DCoat_R12" */;
+			buildPhases = (
+				65E5168D083D10D0005BFD9A /* Headers */,
+				65E5168E083D10D0005BFD9A /* Sources */,
+				65E5168F083D10D0005BFD9A /* Resources */,
+				65E51690083D10D0005BFD9A /* Frameworks */,
+				65E51691083D10D0005BFD9A /* Rez */,
+			);
+			buildRules = (
+				65805F2D0851B32A0065CE1B /* PBXBuildRule */,
+			);
+			dependencies = (
+				657FF1C90859150C00750201 /* PBXTargetDependency */,
+			);
+			name = Applink_3DCoat_R12;
+			productName = "xtensions (Debug)";
+			productReference = 844A245414AD3FCF000B4FA3 /* Applink_3DCoat.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		65E5168A083D10D0005BFD9A /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 65450B6A085517D90099394F /* Build configuration list for PBXProject "Applink_3DCoat_R12" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 65E51686083D10D0005BFD9A;
+			productRefGroup = 65E51694083D10D0005BFD9A /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 657FF105085913EC00750201 /* Products */;
+					ProjectRef = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+				},
+			);
+			projectRoot = ../../..;
+			targets = (
+				65E51692083D10D0005BFD9A /* Applink_3DCoat_R12 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		26EDA6240FA303CF00050D59 /* lib_api_stdmem_debug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = lib_api_stdmem_debug.a;
+			remoteRef = 26EDA6230FA303CF00050D59 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		657FF109085913EC00750201 /* lib_api_debug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = lib_api_debug.a;
+			remoteRef = 657FF108085913EC00750201 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		65E5168F083D10D0005BFD9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		65E51691083D10D0005BFD9A /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		65E5168E083D10D0005BFD9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				844A244314AD3E03000B4FA3 /* ApplinkDialog.cpp in Sources */,
+				844A244514AD3E03000B4FA3 /* ApplinkExporter.cpp in Sources */,
+				844A244714AD3E03000B4FA3 /* ApplinkImporter.cpp in Sources */,
+				844A244914AD3E03000B4FA3 /* ApplinkInit.cpp in Sources */,
+				844A244A14AD3E03000B4FA3 /* ApplinkPreferences.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		657FF1C90859150C00750201 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = _api;
+			targetProxy = 657FF1C80859150C00750201 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		65450B67085517D80099394F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SKIP_INSTALL = NO;
+			};
+			name = Debug;
+		};
+		65450B68085517D80099394F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SKIP_INSTALL = NO;
+			};
+			name = Release;
+		};
+		65450B6B085517D90099394F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6553A1DA0926F00F0034739A /* _api_debug.xcconfig */;
+			buildSettings = {
+				C4D_ROOTDIR = ../..;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = "$(C4D_ROOTDIR)/resource/_api_lib/lib_api_debug.a";
+				PREBINDING = NO;
+				PRODUCT_NAME = Applink_3DCoat;
+				SDKROOT = "";
+			};
+			name = Debug;
+		};
+		65450B6C085517D90099394F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6553A1DB0926F00F0034739A /* _api_release.xcconfig */;
+			buildSettings = {
+				C4D_ROOTDIR = ../..;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = "$(C4D_ROOTDIR)/resource/_api_lib/lib_api_release.a";
+				PREBINDING = NO;
+				PRODUCT_NAME = Applink_3DCoat;
+				SDKROOT = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		65450B66085517D80099394F /* Build configuration list for PBXNativeTarget "Applink_3DCoat_R12" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65450B67085517D80099394F /* Debug */,
+				65450B68085517D80099394F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65450B6A085517D90099394F /* Build configuration list for PBXProject "Applink_3DCoat_R12" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65450B6B085517D90099394F /* Debug */,
+				65450B6C085517D90099394F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 65E5168A083D10D0005BFD9A /* Project object */;
+}

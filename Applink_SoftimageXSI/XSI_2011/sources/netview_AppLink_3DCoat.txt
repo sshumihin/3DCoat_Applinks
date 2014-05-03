@@ -1,0 +1,5 @@
+v.1.5
+1) Added warning messages, when Applink can`t be write a file by some reasons.
+2) On a second tab, path to 3DCoat.exe filled with open PPG.
+v.1.4
+Fixed layout issue: Export->Painting type -> Autoretopo, calling error.

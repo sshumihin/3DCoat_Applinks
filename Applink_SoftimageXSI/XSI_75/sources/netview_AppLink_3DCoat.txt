@@ -1,0 +1,5 @@
+1.Improve export.
+2.Fixed UV Islands.
+3. Added command line [SkipImport] and [SkipExport]
+4. Added line "Drop mesh in 3D-Coat as a curve profile [curv]"
+5. During a creating materials with normal map - inverted green channel, not red.

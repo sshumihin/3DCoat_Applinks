@@ -1,0 +1,668 @@
+#include "c4d_symbols.h"
+
+#include "c4d_gui.h"
+#include "c4d_basedocument.h"
+#include "c4d_basecontainer.h"
+#include "c4d_string.h"
+#include "c4d_baselist.h"
+#include "customgui_datetime.h"
+#include "ge_dynamicarray.h"
+#include "ge_math.h"
+#include "ge_lvector.h"
+
+#include "ApplinkExporter.h"
+#include "ApplinkDialog.h"
+#include "ApplinkPreferences.h"
+
+ApplinkExporter::ExportObject::ExportObject(void)
+{
+	Vp.FreeArray(); Vt.FreeArray(); //Vn.Free();
+	Fv.FreeArray(); Fvt.FreeArray(); Fvn.FreeArray(); Fpvnb.FreeArray();
+	pmatidxArray.FreeArray(); tempMats.FreeArray();
+	pVertexCount = 0;
+}
+ApplinkExporter::ExportObject::~ExportObject(void)
+{
+	StatusClear();
+}
+Int32 ApplinkExporter::PVertexLength(ExportObject& mObject)
+{
+	Int32 length=0;
+	for(Int32 p=0; p < mObject.Fpvnb.GetCount(); p++)
+	{
+		length += mObject.Fpvnb[p];
+	}
+	return length;
+}
+BaseList2D* ApplinkExporter::getParameterLink(GeListNode& node, Int32 paramID, Int32 instanceOf)
+{
+	GeData parameter;
+	if (node.GetParameter(DescLevel(paramID), parameter, DESCFLAGS_GET_0)) 
+	{
+		BaseLink* link = parameter.GetBaseLink();
+		if (link) 
+		{
+			return link->GetLink(node.GetDocument(), instanceOf);
+		}
+	}
+	return 0;
+}
+String ApplinkExporter::getParameterString(BaseTag& tag, Int32 paramID)
+{
+	GeData parameter;
+	if (tag.GetParameter(DescLevel(paramID), parameter, DESCFLAGS_GET_0)) 
+	{
+		return parameter.GetString();
+	}
+	return "";
+}
+Int32 ApplinkExporter::getParameterLong(BaseMaterial& mat, Int32 paramID)
+{
+	GeData parameter;
+	if (mat.GetParameter(DescLevel(paramID), parameter, DESCFLAGS_GET_0))
+	{
+		return parameter.GetInt32();
+	}
+	return 0;
+}
+Float ApplinkExporter::getParameterReal(C4DAtom& atom, Int32 paramID, Float preset)
+{
+	GeData parameter;
+	if (atom.GetParameter(DescLevel(paramID), parameter, DESCFLAGS_GET_0) && (parameter.GetType() != DA_NIL))
+	{
+		return parameter.GetFloat();
+	}
+	return preset;
+}
+
+Vector ApplinkExporter::getParameterVector(C4DAtom& atom, Int32 paramID)
+{
+	GeData parameter;
+	if (atom.GetParameter(DescLevel(paramID), parameter, DESCFLAGS_GET_0)) 
+	{
+		return parameter.GetVector();
+	}
+	return Vector(0.0);
+}
+Filename ApplinkExporter::getParameterFilename(C4DAtom& atom, Int32 paramID)
+{
+	GeData parameter;
+	if (atom.GetParameter(DescLevel(paramID), parameter, DESCFLAGS_GET_0)) {
+		return parameter.GetFilename();
+	}
+	return NULL;
+}
+
+Bool ApplinkExporter::Execute(BaseDocument* document, BaseContainer* bc)
+{
+	matDefault = BaseMaterial::Alloc(Mmaterial);
+	if(!matDefault) return false;
+
+	Filename fileObjPath;
+	fileObjPath.SetDirectory(bc->GetString(IDC_TMP_FOLDER));
+	fileObjPath.SetFile(document->GetDocumentName());
+	fileObjPath.SetSuffix("obj");
+	Filename fileObjOutPath;
+	fileObjOutPath.SetDirectory(bc->GetString(IDC_TMP_FOLDER));
+	fileObjOutPath.SetFile("output.obj");
+	Filename fileImport;
+	fileImport.SetDirectory(bc->GetString(IDC_EXCH_FOLDER));
+	fileImport.SetFile("import.txt");
+
+	GePrint(fileObjPath.GetString());
+	GePrint(fileObjOutPath.GetString());
+	GePrint(fileImport.GetString());
+
+	const Matrix tM(Vector(0.0f, 0.0f, 0.0f), Vector(1.0f, 0.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f), Vector(0.0f, 0.0f, -1.0f));
+
+	AutoAlloc<AtomArray> oSel;
+	document->GetActiveObjects(oSel, GETACTIVEOBJECTFLAGS_0);
+
+	if(oSel->GetCount() > 0)
+	{
+//Write import.txt//
+		AutoAlloc<BaseFile> basefileImport;
+		
+		if (!basefileImport->Open(fileImport, FILEOPEN_WRITE, FILEDIALOG_NONE, GeGetByteOrder())) return false;
+		
+		this->WriteString(fileObjPath.GetString() + "\n", basefileImport);
+		this->WriteString(fileObjOutPath.GetString() + "\n", basefileImport);
+		this->WriteString(mapType(bc->GetInt32(IDC_COMBO_MAP_TYPE)) + "\n", basefileImport);
+
+		Bool bSkipImp = bc->GetBool(IDC_CHK_SKIP_IMP_DIALOG);
+
+		if(bSkipImp)
+		{
+			this->WriteString("[SkipImport]\n", basefileImport);
+		}
+
+		Bool bSkipExp = bc->GetBool(IDC_CHK_SKIP_EXP_DIALOG);
+
+		if(bSkipExp)
+		{
+			this->WriteString("[SkipExport]\n", basefileImport);
+		}
+
+		GePrint(mapType(bc->GetInt32(IDC_COMBO_MAP_TYPE)));
+		basefileImport->Close();
+
+		GePrint("File " + fileImport.GetString() + " write success!");
+
+//Write file.obj//
+		AutoAlloc<BaseFile> objfile;
+
+		if (!objfile->Open(fileObjPath, FILEOPEN_WRITE, FILEDIALOG_NONE, GeGetByteOrder())) return false;
+
+		String str;
+		str = "#Wavefront OBJ Export for 3D-Coat\n";
+		this->WriteString(str, objfile);
+		DateTime t;
+		GetDateTimeNow(t);
+		str = "#File created: " + FormatTime("%d.%m.%Y  %H:%M:%S", t) + "\n";
+		this->WriteString(str, objfile);
+		str = "#Cinema4D Version: " + String::IntToString(GetC4DVersion()) + "\n";
+		this->WriteString(str, objfile);
+		this->WriteEndLine(objfile);
+
+		Bool expMat = bc->GetBool(IDC_CHK_EXP_MAT);
+		vpcnt = vtcnt = 0;
+
+		for(int i = 0; i < oSel->GetCount(); i++)
+		{
+			StatusSetSpin();
+			PolygonObject* ob = (PolygonObject*) oSel->GetIndex(i);
+			if (ob->GetType() == Opolygon)
+			{
+				StatusSetText("Export object " + ob->GetName());
+				ExportObject mObject;
+
+				GePrint("Name " + ob->GetName());
+				//GePrint("Type " + LongToString(ob->GetType()));
+
+				if(expMat)
+				{
+					mObject.pmatidxArray.ReSize(ob->GetPolygonCount());
+					mObject.tempMats.ReSize(1);
+					mObject.pmatidxArray.Fill(0);
+					Bool haveMats = false;
+	//////////////////////////////////////////
+					for(BaseTag* tag = ob->GetFirstTag(); tag != NULL; tag = tag->GetNext())
+					{
+						Int32 typ = tag->GetType();
+						if(typ == Ttexture)
+						{
+							if (!getParameterLink(*tag, TEXTURETAG_MATERIAL, Mbase)) continue;
+						
+							haveMats = true;
+							TextureTag* txttag = (TextureTag*)tag;
+							BaseMaterial* material = txttag->GetMaterial();
+
+							if(material == NULL)
+							{
+								GePrint("Material not found on " + ob->GetName() + "object.");
+								return false;
+							}
+							//GePrint("Mat Name: " + material->GetName());						
+
+							String restrict = getParameterString(*tag, TEXTURETAG_RESTRICTION);
+							if (restrict.Content())
+							{
+								mObject.tempMats.Push(material);
+								//GePrint("Selection: " + restrict);
+								for(BaseTag* seltag = ob->GetFirstTag(); seltag != NULL; seltag = seltag->GetNext())
+								{
+									Int32 seltyp = seltag->GetType();
+									if(seltyp == Tpolygonselection && seltag->GetName() == restrict)
+									{
+										SelectionTag* selecttag = (SelectionTag*)seltag;
+										BaseSelect* sel = selecttag->GetBaseSelect();
+										//GePrint("sel data count: " + LongToString(sel->GetCount()));
+
+										Int32 seg = 0, a, b, p;
+										Int32 maxElem = LIMIT<Int32>::MAX;
+										while (sel->GetRange(seg++, maxElem, &a, &b))
+										{
+											for (p = a; p <= b; ++p)
+											{
+												//GePrint("seltpolygon: " + LongToString(p));
+												mObject.pmatidxArray[p] = mObject.tempMats.GetCount()-1;
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								mObject.tempMats[0] = material;
+								mObject.pmatidxArray.Fill(0);
+							}
+						}
+					}
+
+					if(!mObject.tempMats[0])
+					{
+						matDefault->SetName("Default");
+
+						BaseChannel* color = matDefault->GetChannel(CHANNEL_COLOR);
+						if (!color) return false;	// return some error
+						BaseContainer cdata = color->GetData();
+						cdata.SetVector(BASECHANNEL_COLOR_EX, Vector(1.0f, 1.0f, 1.0f));
+						
+						mObject.tempMats[0] = matDefault;
+					}
+
+					if(haveMats)
+					{
+						//GePrint("mObject.tempMats.GetCount(): " + LongToString(mObject.tempMats.GetCount()));
+						for(Int32 m = 0; m < mObject.tempMats.GetCount(); m++)
+						{
+							Bool inMats = false;
+							//GePrint("materialArray.GetCount(): " + LongToString(materialArray.GetCount()));
+							for(Int32 n = 0; n < materialArray.GetCount(); n++)
+							{
+								if(mObject.tempMats[m]->GetName() == materialArray[n]->GetName())
+								{
+									inMats = true;
+									break;
+								}
+							}
+							if(!inMats)
+							{
+								materialArray.Push(mObject.tempMats[m]);
+							}
+						}
+					}
+				}
+/////////////////////////////////////////////////
+				const Vector* vadr = ob->GetPointR();
+				const CPolygon* padr = ob->GetPolygonR();
+				Int32 vcnt = ob->GetPointCount();
+				Int32 pcnt = ob->GetPolygonCount();
+
+				mObject.Fpvnb.ReSize(pcnt);// poly counts
+				for(Int32 p = 0; p < pcnt; p++)
+				{
+					if(padr[p].c != padr[p].d)
+					{
+						mObject.Fpvnb[p] = 4;
+					}
+					else
+					{
+						mObject.Fpvnb[p] = 3;
+					}
+				}
+				mObject.pVertexCount = PVertexLength(mObject);
+
+				//Vertex positions
+				mObject.Vp.ReSize(vcnt);
+				Matrix mg = tM * ob->GetMgn();
+				for (Int32 v = 0; v < vcnt; v++)
+				{
+					mObject.Vp[v] = mg * vadr[v];
+				}
+				
+				mObject.Fv.ReSize(mObject.pVertexCount);
+				Int32 y=0;
+				for (Int32 p = 0; p < pcnt; p++)
+				{
+					if(mObject.Fpvnb[p] == 4)
+					{
+						mObject.Fv[y] = padr[p].d;
+						mObject.Fv[y+1] = padr[p].c;
+						mObject.Fv[y+2] = padr[p].b;
+						mObject.Fv[y+3] = padr[p].a;
+					}
+					else
+					{
+						mObject.Fv[y] = padr[p].c;
+						mObject.Fv[y+1] = padr[p].b;
+						mObject.Fv[y+2] = padr[p].a;
+					}
+
+					y += mObject.Fpvnb[p];
+				}
+///////////////////////////////
+///////////vertex UV
+//////////////////////////////
+				if(bc->GetBool(IDC_CHK_EXP_UV))
+				{
+					// Get first UV tag (if at least one)
+					UVWTag* uvw_tag = (UVWTag*)ob->GetTag(Tuvw, 0);
+					if(!uvw_tag)
+					{
+						GePrint("Object \"" + ob->GetName() + "\" has no UVW tag.\nUV coordinates can't be exported.");
+						return false;
+					}
+					else
+					{
+						mObject.Vt.ReSize(mObject.pVertexCount);
+						mObject.Fvt.ReSize(mObject.pVertexCount);						
+						ConstUVWHandle dataptr = uvw_tag->GetDataAddressR();
+						UVWStruct res;
+						
+						for(Int32 t=0, y=0; t < pcnt; t++)
+						{
+							//GePrint("y: " + LongToString(y));
+							UVWTag::Get(dataptr, t, res);
+							if(mObject.Fpvnb[t] == 4)
+							{
+								mObject.Vt[y] = res.d;
+								mObject.Vt[y + 1] = res.c;
+								mObject.Vt[y + 2] = res.b;
+								mObject.Vt[y + 3] = res.a;
+							
+								mObject.Fvt[y] = y;
+								mObject.Fvt[y + 1] = y + 1;
+								mObject.Fvt[y + 2] = y + 2;
+								mObject.Fvt[y + 3] = y + 3;
+
+							}
+							else
+							{
+								mObject.Vt[y] = res.c;
+								mObject.Vt[y + 1] = res.b;
+								mObject.Vt[y + 2] = res.a;
+
+								mObject.Fvt[y] = y;
+								mObject.Fvt[y + 1] = y + 1;
+								mObject.Fvt[y + 2] = y + 2;
+
+							}
+							y += mObject.Fpvnb[t];
+						}
+					}
+				}
+
+				WriteExportFile(bc, ob, objfile, mObject, vcnt, pcnt);
+				//GePrint("Fvt: " + LongToString(Fvt.GetCount()));
+				vpcnt += mObject.Vp.GetCount();
+				if(bc->GetBool(IDC_CHK_EXP_UV))
+					vtcnt += mObject.Vt.GetCount();
+			}
+		}
+		objfile->Close();
+
+		if(expMat && materialArray.GetCount() > 0)
+			WriteMatsFile(document, bc);
+	}
+	else
+	{
+		GePrint("No selected objects!");
+	}
+
+	BaseMaterial::Free(matDefault);
+	return true;
+}
+
+String ApplinkExporter::mapType(Int32 id)
+{
+	String strPaint = "[";
+	switch (id)
+	{
+		case 0:
+			strPaint += "ppp";
+			break;
+		case 1:
+			strPaint += "mv";
+			break;
+		case 2:
+			strPaint += "ptex";
+			break;
+		case 3:
+			strPaint += "uv";
+			break;
+		case 4:
+			strPaint += "ref";
+			break;
+		case 5:
+			strPaint += "retopo";
+			break;
+		case 6:
+			strPaint += "vox";
+			break;
+		case 7:
+			strPaint += "alpha";
+			break;
+		case 8:
+			strPaint += "prim";
+			break;
+		case 9:
+			strPaint += "curv";
+			break;
+		case 10:
+			strPaint += "autopo";
+			break;
+
+	}
+	strPaint += "]";
+
+	return strPaint;
+}
+
+void ApplinkExporter::WriteString(String string, BaseFile* file)
+{
+	Int32 length = string.GetCStringLen(STRINGENCODING_8BIT) + 1;
+	Char* to_write = NewMemClear(char, length);
+	string.GetCString(to_write, length, STRINGENCODING_8BIT);
+	INT t;
+	for(t = 0; t < length - 1; t++)
+	{
+		file->WriteChar(to_write[t]);
+	}
+	DeleteMem(to_write);
+}
+
+void ApplinkExporter::WriteEndLine(BaseFile* file)
+{
+	String string = "\n";
+	Int32 length = string.GetCStringLen(STRINGENCODING_8BIT) + 1;
+	Char* to_write = NewMemClear(char, length);
+	string.GetCString(to_write, length, STRINGENCODING_8BIT);
+	INT t;
+	for(t = 0; t < length - 1; t++)
+	{
+		file->WriteChar(to_write[t]);
+	}
+	DeleteMem(to_write);
+}
+
+void ApplinkExporter::WriteVertexPositions(BaseFile* objfile, ExportObject& mObject, Int32 vcnt)
+{
+	String str = "# begin " + String::IntToString(vcnt) + " vertices\n";
+	this->WriteString(str, objfile);	
+
+	for (Int32 p = 0; p < mObject.Vp.GetCount(); p++)
+	{
+		str = "v " + String::FloatToString(mObject.Vp[p].x, NULL, 6) + " " + String::FloatToString(mObject.Vp[p].y, NULL, 6) + " " + String::FloatToString(mObject.Vp[p].z, NULL, 6) + "\n";
+		this->WriteString(str, objfile);
+	}
+
+	str = "# end " + String::IntToString(vcnt) + " vertices\n";
+	this->WriteString(str, objfile);	
+	this->WriteEndLine(objfile);
+}
+void ApplinkExporter::WriteUVWTag(BaseFile* objfile, ExportObject& mObject, Int32 pcnt, const CPolygon* padr)
+{	
+	String str = "# begin " + String::IntToString(mObject.Vt.GetCount()) + " texture vertices\n";
+	this->WriteString(str, objfile);
+
+	for(Int32 t = 0, y=0; t < pcnt; t++)
+	{							
+		str = "vt " + String::FloatToString(mObject.Vt[y].x, NULL, 6) + " " + String::FloatToString( 1 - mObject.Vt[y].y, NULL, 6) + " " + String::FloatToString(mObject.Vt[y].z, NULL, 6) + "\n";
+		this->WriteString(str, objfile);
+		str = "vt " + String::FloatToString(mObject.Vt[y+1].x, NULL, 6) + " " + String::FloatToString(1 - mObject.Vt[y+1].y, NULL, 6) + " " + String::FloatToString(mObject.Vt[y+1].z, NULL, 6) + "\n";
+		this->WriteString(str, objfile);
+		str = "vt " + String::FloatToString(mObject.Vt[y+2].x, NULL, 6) + " " + String::FloatToString(1 - mObject.Vt[y+2].y, NULL, 6) + " " + String::FloatToString(mObject.Vt[y+2].z, NULL, 6) + "\n";
+		this->WriteString(str, objfile);
+		if(mObject.Fpvnb[t] == 4)
+		{
+			str = "vt " + String::FloatToString(mObject.Vt[y+3].x, NULL, 6) + " " + String::FloatToString(1 - mObject.Vt[y+3].y, NULL, 6) + " " + String::FloatToString(mObject.Vt[y+3].z, NULL, 6) + "\n";
+			this->WriteString(str, objfile);
+		}
+		y += mObject.Fpvnb[t];
+	}
+
+	str = "# end " + String::IntToString(mObject.Vt.GetCount()) + " texture vertices\n";
+	this->WriteString(str, objfile);
+	this->WriteEndLine(objfile);
+}
+
+
+void ApplinkExporter::WriteExportFile(BaseContainer* bc, PolygonObject* ob, BaseFile* objfile, ExportObject& mObject, Int32 vcnt, Int32 pcnt)
+{
+	const CPolygon* padr = ob->GetPolygonR();
+	Bool expUV = bc->GetBool(IDC_CHK_EXP_UV);
+	Bool expMat = bc->GetBool(IDC_CHK_EXP_MAT);
+	String str;
+
+	if(expMat && materialArray.GetCount() > 0)
+	{
+		Filename fileMatObj;
+		fileMatObj.SetFile(GetActiveDocument()->GetDocumentName());
+		fileMatObj.SetSuffix("mtl");
+
+		str = "mtllib " + fileMatObj.GetFile().GetString() + "\n";
+		this->WriteString(str, objfile);
+		this->WriteEndLine(objfile);
+	}
+
+	str = "g " + ob->GetName() + "\n";
+	this->WriteString(str, objfile);
+	this->WriteEndLine(objfile);
+
+	// vertex positions
+	ApplinkExporter::WriteVertexPositions(objfile, mObject, vcnt);
+	//UV
+	if(expUV)
+		ApplinkExporter::WriteUVWTag(objfile, mObject, pcnt, padr);
+
+	//Polygon faces v/vt/vn (v//vn)
+	str = "# begin " + String::IntToString(pcnt) + " faces\n";
+	this->WriteString(str, objfile);
+
+	Int32 y=0;
+	String prevMat = "", currMat = "";
+
+	for (Int32 i = 0; i < pcnt; i++)
+	{
+		if(expMat && materialArray.GetCount() > 0)
+		{
+			currMat = mObject.tempMats[mObject.pmatidxArray[i]]->GetName();
+			if(currMat != prevMat)
+			{
+				str = "usemtl " + currMat + "\n";
+				this->WriteString(str, objfile);
+				prevMat = currMat;
+			}
+		}
+
+		//GePrint("Polygon[" + LongToString(i) + "] " + LongToString(vadr[i].a) + ", " + LongToString(vadr[i].b) + ", " + LongToString(vadr[i].c) + ", " + LongToString(vadr[i].d));
+		str = "f";
+		//GePrint("poly vertices: " + LongToString(mObject.Fpvnb[i]));
+		for(Int32 j = 0; j < mObject.Fpvnb[i]; j++)
+		{			
+			str += " ";
+			str += String::IntToString(mObject.Fv[y+j] + 1 + vpcnt);
+
+			if(expUV && mObject.Fvt.GetCount() > 0)
+			{
+				str += "/";
+				str += String::IntToString(mObject.Fvt[y+j] + 1 + vtcnt);
+			}
+		}
+
+		str += "\n";
+		//GePrint("str = " + str);
+		this->WriteString(str, objfile);
+		y += mObject.Fpvnb[i];
+	}
+
+	str = "# end " + String::IntToString(pcnt) + " faces\n";
+	this->WriteString(str, objfile);
+	this->WriteEndLine(objfile);
+}
+
+Bool ApplinkExporter::WriteMatsFile(BaseDocument* document, BaseContainer* bc)
+{
+	Filename filenameMTL;
+	filenameMTL.SetDirectory(bc->GetString(IDC_TMP_FOLDER));
+	filenameMTL.SetFile(document->GetDocumentName());
+	filenameMTL.SetSuffix("mtl");
+	
+	GePrint(filenameMTL.GetString());
+
+	AutoAlloc<BaseFile> fileMTL;
+		
+	if (!fileMTL->Open(filenameMTL, FILEOPEN_WRITE, FILEDIALOG_NONE, GeGetByteOrder())) return false;
+	
+	for(Int32 i=0; i < materialArray.GetCount(); i++)
+	{
+		BaseMaterial* mat = materialArray[i];
+		
+		String str;
+		str = "newmtl " + mat->GetName() + "\n";
+		this->WriteString(str, fileMTL);
+
+		//Ka
+		str = "Ka 0.300000 0.300000 0.300000\n";
+		this->WriteString(str, fileMTL);
+
+/////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////
+		//Kd
+		if(getParameterLong(*mat, MATERIAL_USE_COLOR))
+		{
+			ExportChannel(document, fileMTL, *mat, MATERIAL_COLOR_SHADER, MATERIAL_COLOR_COLOR, "Kd");
+		}
+
+		//Ks
+		if(getParameterLong(*mat, MATERIAL_USE_REFLECTION))
+		{
+			ExportChannel(document, fileMTL, *mat, MATERIAL_REFLECTION_SHADER, MATERIAL_REFLECTION_COLOR, "Ks");
+		}
+
+		//Ns
+		str = "Ns 50.000000\n";
+		this->WriteString(str, fileMTL);
+
+		//Tr
+		str = "Tr 0.000000\n";
+		this->WriteString(str, fileMTL);
+
+		//illum
+		str = "illum 2\n";
+		this->WriteString(str, fileMTL);
+		this->WriteEndLine(fileMTL);
+	}
+
+	fileMTL->Close();
+
+	return true;
+}
+
+void ApplinkExporter::ExportChannel(BaseDocument* document, BaseFile* file, BaseMaterial& material, Int32 shaderId, Int32 colorId, const String s)
+{
+	String str = s + " ";
+
+	// get texture strength and base colour
+	Vector color = getParameterVector(material, colorId);
+
+	str += String::FloatToString(color.x, NULL, 6) + " " + String::FloatToString(color.y, NULL, 6) + " " + String::FloatToString(color.z, NULL, 6) + "\n";
+	this->WriteString(str, file);
+
+	// fetch bitmap shader, if available
+	BaseList2D* bitmapLink = ApplinkExporter::getParameterLink(material, shaderId, Xbitmap);
+
+	if(bitmapLink)
+	{
+		// if we are here, we've got a bitmap shader -> let's create an imagemap texture
+		Filename bitmapPath = ApplinkExporter::getParameterFilename(*bitmapLink, BITMAPSHADER_FILENAME);
+		Filename fullBitmapPath;
+		GenerateTexturePath(document->GetDocumentPath(), bitmapPath, Filename(), &fullBitmapPath);
+
+		str = "map_" + s + " ";
+		str += fullBitmapPath.GetString() + "\n";
+		this->WriteString(str, file);
+	}
+}
