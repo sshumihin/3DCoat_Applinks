@@ -1,7 +1,9 @@
+#pragma once
 #include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <tlhelp32.h>
 
 #include <xsi_application.h>
@@ -31,10 +33,13 @@ using namespace std;
 extern Application app;
 
 bool Find3DCoat();
+void ShowUp3DCoat();
 BOOL FileOrDirectoryExists(LPCTSTR, bool);
 void FindFolder3DCoatV(CustomProperty&, TCHAR*);
 
-string typePaintArray[] = {"ppp", "mv", "ptex", "uv", "ref", "retopo", "vox", "alpha", "prim", "curv", "autopo"};
+const char* args[] =  {"ppp", "mv", "ptex", "uv", "ref", "retopo", "vox", "alpha", "prim", "curv", "autopo"};
+vector<string> typePaintArray(args, end(args));
+
 CString pluginPath = CUtils::BuildPath(app.GetInstallationPath(siUserAddonPath), L"AppLink_3DCoat", L"Application", L"Plugins");
 //*****************************************************************************
 /*!	Helper function for accessing the Import Export custom property.
@@ -300,35 +305,6 @@ SICALLBACK AppLink_3DCoat_PPGEvent( const CRef& in_ctxt )
 				CValue retVal;
 
 				app.ExecuteCommand( L"Coat3DExport", args, retVal );
-				
-				CString exeLocation = prop.GetParameter(L"exeLocation").GetValue();
-				bool bStart = prop.GetParameter(L"bStart").GetValue();
-				
-				if(bStart)
-				{
-					std::ifstream exefile(exeLocation.GetAsciiString());
-					if(exefile.good())
-					{
-						exefile.close();
-
-						if(!Find3DCoat())
-						{
-							if((int)::ShellExecute(NULL, TEXT("open"), exeLocation.GetAsciiString(), NULL, NULL, SW_SHOWNORMAL) <= 32)
-							{
-								app.LogMessage(L"3D-Coat.exe not found!", siWarningMsg);
-							}
-						}
-						else
-						{
-							app.LogMessage(L"3D-Coat.exe is run!", siWarningMsg);
-						}
-					}
-					else
-					{
-						app.LogMessage(L"3D-Coat.exe not found!", siWarningMsg);
-						exefile.close();
-					}
-				}
 			}
 			else
 			{
@@ -457,6 +433,37 @@ bool Find3DCoat()
 	}
 	CloseHandle(hSnapshot);
 	return false;
+}
+
+void ShowUp3DCoat()
+{		
+	bool bStart = Get3DCoatParam(L"bStart").GetValue();
+	if(bStart)
+	{
+		CString exeLocation = Get3DCoatParam(L"exeLocation").GetValue();
+		std::ifstream exefile(exeLocation.GetAsciiString());
+		if(exefile.good())
+		{
+			exefile.close();
+
+			if(!Find3DCoat())
+			{
+				if((int)::ShellExecute(NULL, TEXT("open"), exeLocation.GetAsciiString(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+				{
+					app.LogMessage(L"3D-Coat.exe not found!", siWarningMsg);
+				}
+			}
+			else
+			{
+				app.LogMessage(L"3D-Coat.exe is run!", siWarningMsg);
+			}
+		}
+		else
+		{
+			app.LogMessage(L"3D-Coat.exe not found!", siWarningMsg);
+			exefile.close();
+		}
+	}
 }
 
 BOOL FileOrDirectoryExists(LPCTSTR szPath, bool isDir)

@@ -1,10 +1,11 @@
+#pragma once
 #include <math.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <set>
 #include <vector>
+#include <algorithm>
 
 #include <xsi_application.h>
 #include <xsi_argument.h>
@@ -43,7 +44,7 @@ using namespace std;
 
 extern Application app;
 extern ProgressBar bar;
-extern string typePaintArray[];
+extern vector<string> typePaintArray;
 
 int gV; //vertices position count
 int gVprev; //vertices position count
@@ -56,6 +57,7 @@ CLongArray g_aNodeIsland;// new array PolyVt
 
 extern CustomProperty Coat3DToolProp();
 extern Parameter Get3DCoatParam( const CString& in_strName );
+extern void ShowUp3DCoat();
 
 void OutputVertices( std::ofstream&, CGeometryAccessor&, X3DObject& );
 void OutputArrayPositions( std::ofstream& , CDoubleArray&, MATH::CTransformation& );
@@ -64,7 +66,7 @@ SICALLBACK OutputMaterials( Selection&);
 void OutputPolygonComponents( std::ofstream&, CGeometryAccessor&);
 void OutputClusterPropertyValues( std::ofstream&, CGeometryAccessor&, CRefArray& );
 void OutputHeader( std::ofstream&);
-SICALLBACK OutputImportTxt(CString);
+SICALLBACK OutputImportTxt(CString&);
 bool IsValid(CString& );
 CString FormatNumber(double&);
 CString FormatNumber(float&);
@@ -649,15 +651,10 @@ void OutputHeader( std::ofstream& in_mfw)
 
 bool IsValid(CString& value)
 {
-	for(unsigned int i=0; i < typePaintArray->size(); i++)
-	{
-		if(value == CString(typePaintArray[i].c_str())) return true;
-	}
-
-	return false;
+	return (find(typePaintArray.begin(), typePaintArray.end(), value.GetAsciiString()) != typePaintArray.end());
 }
 
-SICALLBACK OutputImportTxt(CString valuePaint)
+SICALLBACK OutputImportTxt(CString& valuePaint)
 {
 	// prepare the import.txt file
 	CString strOut = CUtils::BuildPath(Get3DCoatParam( L"coatLocation" ).GetValue(), L"import.txt");
@@ -862,6 +859,8 @@ SICALLBACK Coat3DExport_Execute( CRef& in_ctxt )
 		bar.PutVisible(false);
 
 		app.LogMessage(L"Export done!");
+
+		ShowUp3DCoat();
 	}
 	else
 	{
