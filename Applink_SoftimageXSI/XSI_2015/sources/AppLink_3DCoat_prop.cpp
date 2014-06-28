@@ -26,12 +26,15 @@
 #include <shlobj.h>
 
 using namespace XSI;
+using namespace std;
+
 extern Application app;
 
 bool Find3DCoat();
 BOOL FileOrDirectoryExists(LPCTSTR, bool);
 void FindFolder3DCoatV(CustomProperty&, TCHAR*);
 
+string typePaintArray[] = {"ppp", "mv", "ptex", "uv", "ref", "retopo", "vox", "alpha", "prim", "curv", "autopo"};
 CString pluginPath = CUtils::BuildPath(app.GetInstallationPath(siUserAddonPath), L"AppLink_3DCoat", L"Application", L"Plugins");
 //*****************************************************************************
 /*!	Helper function for accessing the Import Export custom property.
@@ -75,6 +78,7 @@ SICALLBACK AppLink_3DCoat_Define( CRef& in_ctxt )
 	pset.AddParameter(L"coatLocation", CValue::siString, siPersistable, L"Exchange Path", L"", dft, param);
 	pset.AddParameter(L"exeLocation", CValue::siString, siPersistable, L"3D-Coat.exe", L"", dft, param);
 	pset.AddParameter(L"typePaint", CValue::siUInt1, NULL, L"Painting type", L"", (LONG)0, (LONG)0, (LONG)10,  dft, dft, param);
+	pset.AddParameter(L"CommandArguments", CValue::siString, siPersistable, L"", L"", dft, param);
 	pset.AddParameter(L"bExpNorm", CValue::siBool, NULL, L"Normals", L"", true, param);
 	pset.AddParameter(L"bExpMat", CValue::siBool, NULL, L"Material", L"", true, param);
 	pset.AddParameter(L"bExpUV", CValue::siBool, NULL, L"Current UV Set", L"", true, param);
@@ -152,6 +156,12 @@ SICALLBACK AppLink_3DCoat_DefineLayout( CRef& in_ctxt )
 			sizeItems[18] = L"Drop mesh as a curve profile"; sizeItems[19] = (LONG)9 ;
 			sizeItems[20] = L"Drop mesh for Auto-retopology"; sizeItems[21] = (LONG)10 ;
 			ppg.AddEnumControl( L"typePaint", sizeItems, L"", siControlCombo ) ;
+
+			ppg.AddGroup(L"Command Arguments");
+			item = ppg.AddString(L"CommandArguments", L"", true, 35);
+			item.PutAttribute(siUINoLabel, true);			
+			ppg.EndGroup();
+
 			ppg.AddItem(L"bExpNorm");
 			ppg.AddItem(L"bExpMat");
 			ppg.AddItem(L"bExpUV");
@@ -255,6 +265,11 @@ SICALLBACK AppLink_3DCoat_PPGEvent( const CRef& in_ctxt )
 				FindFolder3DCoatV(prop, Path);
 			}
 		}
+
+		Parameter paramca = prop.GetParameter(L"CommandArguments");
+		paramca.PutValue(L"'ppp', 'mv', 'ptex', 'uv', 'ref', 'retopo', 'vox', 'alpha', 'prim', 'curv', 'autopo'");
+		paramca.PutCapabilityFlag(siReadOnly, true);
+
 		//prop.GetParameter(L"bImpNorm").PutCapabilityFlag(siNotInspectable, true);
 		//prop.GetParameter(L"bImpNewMat").PutCapabilityFlag(siReadOnly, true);
 
@@ -273,14 +288,14 @@ SICALLBACK AppLink_3DCoat_PPGEvent( const CRef& in_ctxt )
 
 			if(CUtils::EnsureFolderExists(tempLocation, true))
 			{
-				CValueArray args(6);
-				args[0] = tempLocation;
-				args[1] = coatLocation;
-				args[2] = in_pset.GetParameterValue( L"typePaint" );
+				CValueArray args(1);
+				//args[0] = tempLocation;
+				//args[1] = coatLocation;
+				args[0] = CString(typePaintArray[in_pset.GetParameterValue( L"typePaint" )].c_str());
 				//args[3] = in_pset.GetParameterValue( L"bCopyTexE" );
-				args[3] = in_pset.GetParameterValue( L"bExpMat" );
-				args[4] = in_pset.GetParameterValue( L"bExpUV" );
-				args[5] = in_pset.GetParameterValue( L"bExpNorm" );
+				//args[3] = in_pset.GetParameterValue( L"bExpMat" );
+				//args[4] = in_pset.GetParameterValue( L"bExpUV" );
+				//args[5] = in_pset.GetParameterValue( L"bExpNorm" );
 				
 				CValue retVal;
 

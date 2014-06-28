@@ -26,7 +26,9 @@
 #include <windows.h>
 
 using namespace XSI;
+
 Application app;
+
 extern CString pluginPath;
 
 // Setup the progress bar
@@ -39,7 +41,7 @@ SICALLBACK XSILoadPlugin( PluginRegistrar& in_reg )
 {
 	in_reg.PutAuthor(L"Svyatoslav Shumikhin");
 	in_reg.PutName(L"AppLink_3DCoat_Plugin");
-	in_reg.PutVersion(1,6);
+	in_reg.PutVersion(1,7);
 	in_reg.PutHelp("http://www.3d-coat.com/forum/index.php");
 	//RegistrationInsertionPoint - do not remove this line
 

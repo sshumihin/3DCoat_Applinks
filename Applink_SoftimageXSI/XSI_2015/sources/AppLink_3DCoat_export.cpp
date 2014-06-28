@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <set>
 #include <vector>
 
 #include <xsi_application.h>
@@ -38,9 +39,11 @@
 #include <xsi_vector3.h>
 
 using namespace XSI;
+using namespace std;
 
 extern Application app;
 extern ProgressBar bar;
+extern string typePaintArray[];
 
 int gV; //vertices position count
 int gVprev; //vertices position count
@@ -61,7 +64,8 @@ SICALLBACK OutputMaterials( Selection&);
 void OutputPolygonComponents( std::ofstream&, CGeometryAccessor&);
 void OutputClusterPropertyValues( std::ofstream&, CGeometryAccessor&, CRefArray& );
 void OutputHeader( std::ofstream&);
-SICALLBACK OutputImportTxt();
+SICALLBACK OutputImportTxt(CString);
+bool IsValid(CString& );
 CString FormatNumber(double&);
 CString FormatNumber(float&);
 
@@ -144,7 +148,6 @@ CString FormatNumber(float& s)
 	return CString(buffer);
 }
 
-
 void OutputVertices( std::ofstream& in_mfw, CGeometryAccessor& in_ga, X3DObject& xobj)
 {
 	bar.PutStatusText( L"Vertices..." );
@@ -188,8 +191,6 @@ void OutputVertices( std::ofstream& in_mfw, CGeometryAccessor& in_ga, X3DObject&
 		in_mfw << "\n";
 	}
 }
-
-
 
 SICALLBACK OutputMaterials( Selection& in_sel )
 {
@@ -646,8 +647,17 @@ void OutputHeader( std::ofstream& in_mfw)
 	in_mfw << "\n";
 }
 
+bool IsValid(CString& value)
+{
+	for(unsigned int i=0; i < typePaintArray->size(); i++)
+	{
+		if(value == CString(typePaintArray[i].c_str())) return true;
+	}
 
-SICALLBACK OutputImportTxt()
+	return false;
+}
+
+SICALLBACK OutputImportTxt(CString valuePaint)
 {
 	// prepare the import.txt file
 	CString strOut = CUtils::BuildPath(Get3DCoatParam( L"coatLocation" ).GetValue(), L"import.txt");
@@ -669,6 +679,7 @@ SICALLBACK OutputImportTxt()
 		tfw << "\n";
 
 		int typePaint = Get3DCoatParam( L"typePaint" ).GetValue();
+		
 
 	//Paint mesh in 3D-Coat using per-pixel painting [ppp]
 	//Paint mesh in 3D-Coat using microvertex painting [mv]
@@ -683,41 +694,10 @@ SICALLBACK OutputImportTxt()
 	//Drop mesh in 3D-Coat for Auto-retopology [autopo]
 
 		CString strPaint = L"[";
-		switch (typePaint)
+		if(!valuePaint.IsEmpty() && IsValid(valuePaint)) strPaint += valuePaint;
+		else
 		{
-			case 0:
-				strPaint += L"ppp";
-				break;
-			case 1:
-				strPaint += L"mv";
-				break;
-			case 2:
-				strPaint += L"ptex";
-				break;
-			case 3:
-				strPaint += L"uv";
-				break;
-			case 4:
-				strPaint += L"ref";
-				break;
-			case 5:
-				strPaint += L"retopo";
-				break;
-			case 6:
-				strPaint += L"vox";
-				break;
-			case 7:
-				strPaint += L"alpha";
-				break;
-			case 8:
-				strPaint += L"prim";
-				break;
-			case 9:
-				strPaint += L"curv";
-				break;
-			case 10:
-				strPaint += L"autopo";
-				break;
+			strPaint += CString(typePaintArray[typePaint].c_str());
 		}
 
 		strPaint += L"]";
@@ -769,13 +749,13 @@ SICALLBACK Coat3DExport_Init( CRef& in_ctxt )
 	ArgumentArray oArgs;
 	oArgs = oCmd.GetArguments();
 
-	oArgs.Add(L"tempLocation", (CString)siString);
-	oArgs.Add(L"coatLocation",(CString)siString);
-	oArgs.Add(L"typePaint",(CValue)siUInt);
+	//oArgs.Add(L"tempLocation", (CString)siString);
+	//oArgs.Add(L"coatLocation",(CString)siString);
+	oArgs.Add(L"typePaint",(CString)siString);
 	//oArgs.Add(L"bCopyTexE",(CValue)siBool);
-	oArgs.Add(L"bExpMat",(CValue)siBool);
-	oArgs.Add(L"bExpUV",(CValue)siBool);
-	oArgs.Add(L"bExpNorm",(CValue)siBool);
+	//oArgs.Add(L"bExpMat",(CValue)siBool);
+	//oArgs.Add(L"bExpUV",(CValue)siBool);
+	//oArgs.Add(L"bExpNorm",(CValue)siBool);
 
 	return CStatus::OK;
 }
@@ -785,6 +765,7 @@ SICALLBACK Coat3DExport_Execute( CRef& in_ctxt )
 	// Unpack the command argument values
 	Context ctxt( in_ctxt );
 	CValueArray args = ctxt.GetAttribute(L"Arguments");
+	CString typePaint = args[0];
 	CString string;
 
 	// A 3d object with a mesh geometry must be selected
@@ -803,7 +784,6 @@ SICALLBACK Coat3DExport_Execute( CRef& in_ctxt )
 	}
 
 	if (selection.GetCount() > 0 && isPolymesh)
-
 	{
 		gV = 0; gVn = 0; gVt = 0;
 		gVprev = 0; gVnPrev = 0; gVtPrev = 0;
@@ -876,7 +856,9 @@ SICALLBACK Coat3DExport_Execute( CRef& in_ctxt )
 			OutputMaterials(selection );
 		}
 		bar.PutStatusText( L"import.txt" );
-		OutputImportTxt();
+
+		OutputImportTxt(typePaint);
+
 		bar.PutVisible(false);
 
 		app.LogMessage(L"Export done!");
