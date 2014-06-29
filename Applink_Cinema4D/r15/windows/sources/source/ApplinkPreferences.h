@@ -9,7 +9,8 @@
 class ApplinkPreferences : public CommandData
 {
 public:
-	virtual Bool Execute(BaseDocument* doc);
+	override Bool Execute(BaseDocument* doc);
+	//override Bool ExecuteOptionID(BaseDocument* doc, Int32 plugid, Int32 subid);
 
 private:
 	ApplinkDialog dlg;

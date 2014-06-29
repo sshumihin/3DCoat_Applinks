@@ -122,20 +122,30 @@ Bool ApplinkDialog::InitValues(void)
 #elif __APPLE__
         path = GeGetC4DPath(C4D_PATH_HOME);
 #endif
+		//file magic!
 		Filename exFolder = path + "3D-CoatV3" + "Exchange";
-
 		if(GeFExist(exFolder, true))
 		{
 			gPreferences.SetString(IDC_EXCH_FOLDER, exFolder.GetString());
 		}
 		else
 		{
+			exFolder = path + "3D-CoatV4" + "Exchange";
+			if (GeFExist(exFolder, true))
+			{
+				gPreferences.SetString(IDC_EXCH_FOLDER, exFolder.GetString());
+			}
+
+			else
+			{
+				GePrint("Not Find");
 #if defined _WIN32 || defined _WIN64
-			GePrint(String("Folder ..\\MyDocuments\\3D-CoatV3\\Exchange not found!"));
+				GePrint(String("Folder ..\\MyDocuments\\3D-CoatV3\\Exchange not found!"));
 #elif __APPLE__
-            GePrint(String("Folder ../Users/admin/3D-CoatV3/Exchange  not found!"));
+				GePrint(String("Folder ../Users/admin/3D-CoatV3/Exchange  not found!"));
 #endif
-			gPreferences.SetString(IDC_EXCH_FOLDER, "");
+				gPreferences.SetString(IDC_EXCH_FOLDER, "");
+			}
 		}
         
 		gPreferences.SetInt32(IDC_COMBO_MAP_TYPE, 0);
@@ -234,8 +244,7 @@ Bool ApplinkDialog::Command(Int32 id, const BaseContainer& msg)
 		{
 			BaseDocument* doc = GetActiveDocument();
 			ApplinkExporter* exporter = NewObjClear(ApplinkExporter);
-			exporter->Execute(doc, &gPreferences);
-			GePrint("Start export!");
+			exporter->Execute(doc, &gPreferences);			
             
 			String exeCoat = gPreferences.GetString(IDC_COAT_EXE_PATH);
 			if(gPreferences.GetBool(IDC_CHK_COAT_START) && exeCoat != "")

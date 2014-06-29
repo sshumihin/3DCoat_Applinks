@@ -8,6 +8,11 @@ Bool ApplinkPreferences::Execute(BaseDocument* doc)
 	return dlg.Open(DLG_TYPE_ASYNC, PID_APPLINK_PREFERENCES, 100, 100);
 }
 
+//Bool ApplinkPreferences::ExecuteOptionID(BaseDocument* doc, Int32 plugid, Int32 subid)
+//{
+//	return dlg.Open(DLG_TYPE_ASYNC, PID_APPLINK_PREFERENCES, 100, 100);
+//}
+
 //
 Bool RegisterApplink(void)
 {

@@ -95,6 +95,8 @@ Filename ApplinkExporter::getParameterFilename(C4DAtom& atom, Int32 paramID)
 
 Bool ApplinkExporter::Execute(BaseDocument* document, BaseContainer* bc)
 {
+	GePrint("Start export!");
+
 	matDefault = BaseMaterial::Alloc(Mmaterial);
 	if(!matDefault) return false;
 
@@ -328,29 +330,24 @@ Bool ApplinkExporter::Execute(BaseDocument* document, BaseContainer* bc)
 				{
 					// Get first UV tag (if at least one)
 					UVWTag* uvw_tag = (UVWTag*)ob->GetTag(Tuvw, 0);
-					if(!uvw_tag)
-					{
-						GePrint("Object \"" + ob->GetName() + "\" has no UVW tag.\nUV coordinates can't be exported.");
-						return false;
-					}
-					else
+					if(uvw_tag)
 					{
 						mObject.Vt.ReSize(mObject.pVertexCount);
-						mObject.Fvt.ReSize(mObject.pVertexCount);						
+						mObject.Fvt.ReSize(mObject.pVertexCount);
 						ConstUVWHandle dataptr = uvw_tag->GetDataAddressR();
 						UVWStruct res;
-						
-						for(Int32 t=0, y=0; t < pcnt; t++)
+
+						for (Int32 t = 0, y = 0; t < pcnt; t++)
 						{
 							//GePrint("y: " + LongToString(y));
 							UVWTag::Get(dataptr, t, res);
-							if(mObject.Fpvnb[t] == 4)
+							if (mObject.Fpvnb[t] == 4)
 							{
 								mObject.Vt[y] = res.d;
 								mObject.Vt[y + 1] = res.c;
 								mObject.Vt[y + 2] = res.b;
 								mObject.Vt[y + 3] = res.a;
-							
+
 								mObject.Fvt[y] = y;
 								mObject.Fvt[y + 1] = y + 1;
 								mObject.Fvt[y + 2] = y + 2;
@@ -369,15 +366,18 @@ Bool ApplinkExporter::Execute(BaseDocument* document, BaseContainer* bc)
 
 							}
 							y += mObject.Fpvnb[t];
-						}
+						}						
+					}
+					else
+					{
+						GePrint("Object \"" + ob->GetName() + "\" has no UVW tag.\nUV coordinates can't be exported.");
 					}
 				}
 
 				WriteExportFile(bc, ob, objfile, mObject, vcnt, pcnt);
 				//GePrint("Fvt: " + LongToString(Fvt.GetCount()));
 				vpcnt += mObject.Vp.GetCount();
-				if(bc->GetBool(IDC_CHK_EXP_UV))
-					vtcnt += mObject.Vt.GetCount();
+				if (bc->GetBool(IDC_CHK_EXP_UV)) vtcnt += mObject.Vt.GetCount();
 			}
 		}
 		objfile->Close();
@@ -389,6 +389,8 @@ Bool ApplinkExporter::Execute(BaseDocument* document, BaseContainer* bc)
 	{
 		GePrint("No selected objects!");
 	}
+
+	GePrint("Export success!");
 
 	BaseMaterial::Free(matDefault);
 	return true;
@@ -483,6 +485,8 @@ void ApplinkExporter::WriteVertexPositions(BaseFile* objfile, ExportObject& mObj
 }
 void ApplinkExporter::WriteUVWTag(BaseFile* objfile, ExportObject& mObject, Int32 pcnt, const CPolygon* padr)
 {	
+	if (mObject.Vt.GetCount() == 0) return;
+
 	String str = "# begin " + String::IntToString(mObject.Vt.GetCount()) + " texture vertices\n";
 	this->WriteString(str, objfile);
 
