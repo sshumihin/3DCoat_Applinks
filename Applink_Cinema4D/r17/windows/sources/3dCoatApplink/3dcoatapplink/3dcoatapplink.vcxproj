@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{92F9A9EE-EEC8-41BE-8469-9F84022F8A72}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>My3dcoatapplink</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="projectsettings.props" />
+    <Import Project="..\..\..\frameworks\settings\DebugWin64.props" />
+    <Import Project="..\..\..\frameworks\cinema.framework\project\cinema.framework.includes.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="projectsettings.props" />
+    <Import Project="..\..\..\frameworks\settings\ReleaseWin64.props" />
+    <Import Project="..\..\..\frameworks\cinema.framework\project\cinema.framework.includes.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)</TargetName>
+    <TargetExt>.cdl64</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)</TargetName>
+    <TargetExt>.cdl64</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;MY3DCOATAPPLINK_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./source;./source/include;./res;./res/description;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_customgui;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_gv;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_libs;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc/datastructures;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc/memory;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc/utilities;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_preview;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_scaling;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/description;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;MY3DCOATAPPLINK_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./source;./source/include;./res;./res/description;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_customgui;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_gv;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_libs;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc/datastructures;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc/memory;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_misc/utilities;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_preview;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/c4d_scaling;$(MAXON_ROOTDIR)/frameworks/cinema.framework/source/description;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\frameworks\cinema.framework\project\cinema.framework.vcxproj">
+      <Project>{69bf9b7d-7eb2-7fc5-0009-38cb8c5cdea3}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\ApplinkDialog.cpp" />
+    <ClCompile Include="source\ApplinkExporter.cpp" />
+    <ClCompile Include="source\ApplinkImporter.cpp" />
+    <ClCompile Include="source\ApplinkInit.cpp" />
+    <ClCompile Include="source\ApplinkPreferences.cpp" />
+    <ClCompile Include="source\Triangulator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\ApplinkDialog.h" />
+    <ClInclude Include="source\ApplinkExporter.h" />
+    <ClInclude Include="source\ApplinkImporter.h" />
+    <ClInclude Include="source\ApplinkPreferences.h" />
+    <ClInclude Include="source\Triangulator.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
