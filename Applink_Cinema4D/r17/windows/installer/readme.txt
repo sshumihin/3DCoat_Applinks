@@ -1,0 +1,2 @@
+If the applink doesn't appear in the Cinema plugins Menu you should download and install a redistributable package for Visual Studio 2015.
+https://www.microsoft.com/en-us/download/details.aspx?id=48145
