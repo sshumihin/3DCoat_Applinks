@@ -2,10 +2,12 @@
 Export-import plugins for Softimage and Cinema 4D to 3D-Coat
 
 Tutorial for Cinema 4D.
+
 [![Tutorial for Cinema 4D](https://cloud.githubusercontent.com/assets/7456778/22568324/760d89b8-e9a4-11e6-82d4-f3c4ec469683.jpg)](https://vimeo.com/19510449)
 
 
 Tutorials for Softimage.
+
 [![xsi1](https://cloud.githubusercontent.com/assets/7456778/22568701/e3184dee-e9a5-11e6-80b5-ce2d9b8b01da.jpg)](https://vimeo.com/16454501)
 
 [![xsi2](https://cloud.githubusercontent.com/assets/7456778/22568725/f5b78fe6-e9a5-11e6-9a3e-0deef899259a.jpg)](vimeo.com/16521109)
